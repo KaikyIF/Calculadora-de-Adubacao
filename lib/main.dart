@@ -67,61 +67,64 @@ class _TelaCalculadoraState extends State<TelaCalculadora> {
   // ==========================================================
 
   void _calcular() {
-    // Converte o texto da área para número.
-    // O replaceAll permite usar vírgula ou ponto.
-    final area = double.tryParse(_areaController.text.replaceAll(',', '.'));
+    // Pega os valores digitados pelo usuário.
+    final textoArea = _areaController.text.trim().replaceAll(',', '.');
+    final textoDose = _doseController.text.trim().replaceAll(',', '.');
 
-    // Converte o texto da dose para número.
-    final dose = double.tryParse(_doseController.text.replaceAll(',', '.'));
+    // Tenta converter os textos para números.
+    final area = double.tryParse(textoArea);
+    final dose = double.tryParse(textoDose);
 
-    // Atualiza os valores da tela.
     setState(() {
+      // Limpa o resultado anterior antes de fazer uma nova validação.
+      _totalFertilizante = null;
+      _sacos = null;
+      _erro = null;
+
       // ======================================================
-      // PASSO 8 - Verifica se os valores são números válidos
+      // PASSO 8 - Verifica se os campos estão vazios
+      // ======================================================
+
+      if (textoArea.isEmpty || textoDose.isEmpty) {
+        _erro = 'Preencha todos os campos antes de calcular.';
+        return;
+      }
+
+      // ======================================================
+      // PASSO 9 - Verifica se os valores são números válidos
       // ======================================================
 
       if (area == null || dose == null) {
-        _erro = 'Por favor, insira valores válidos nos campos.';
-        _totalFertilizante = null;
-        _sacos = null;
+        _erro = 'Por favor, insira valores numéricos válidos.';
+        return;
       }
+
       // ======================================================
-      // PASSO 9 - Verifica se os valores são maiores que zero
+      // PASSO 10 - Verifica se os valores são maiores que zero
       // ======================================================
-      else if (area <= 0 || dose <= 0) {
+
+      if (area <= 0 || dose <= 0) {
         _erro = 'Todos os valores devem ser maiores que zero.';
-        _totalFertilizante = null;
-        _sacos = null;
+        return;
       }
+
       // ======================================================
-      // PASSO 10 - Realiza o cálculo
+      // PASSO 11 - Realiza o cálculo
       // ======================================================
-      else {
-        _erro = null;
 
-        // Quantidade total de fertilizante em kg.
-        //
-        // Exemplo:
-        // Área = 10 hectares
-        // Dose = 200 kg/ha
-        //
-        // 10 * 200 = 2000 kg
-        _totalFertilizante = area * dose;
+      // Quantidade total de fertilizante em kg.
+      //
+      // Exemplo:
+      // Área = 10 hectares
+      // Dose = 200 kg/ha
+      //
+      // 10 * 200 = 2000 kg
 
-        // ====================================================
-        // PASSO 11 - Calcula a quantidade de sacos
-        // ====================================================
+      _totalFertilizante = area * dose;
 
-        // Divide o total pelo peso do saco escolhido.
-        //
-        // O ceil() arredonda para cima.
-        //
-        // Exemplo:
-        // 2000 / 50 = 40 sacos
-        //
-        // 2010 / 50 = 40,2 -> 41 sacos
-        _sacos = (_totalFertilizante! / _pesoSaco).ceil();
-      }
+      // Calcula a quantidade de sacos.
+      // O ceil() arredonda para cima.
+      _sacos = (_totalFertilizante! / _pesoSaco).ceil();
     });
   }
 
