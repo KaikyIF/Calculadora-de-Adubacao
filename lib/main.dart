@@ -112,18 +112,7 @@ class _TelaCalculadoraState extends State<TelaCalculadora> {
       // PASSO 11 - Realiza o cálculo
       // ======================================================
 
-      // Quantidade total de fertilizante em kg.
-      //
-      // Exemplo:
-      // Área = 10 hectares
-      // Dose = 200 kg/ha
-      //
-      // 10 * 200 = 2000 kg
-
       _totalFertilizante = area * dose;
-
-      // Calcula a quantidade de sacos.
-      // O ceil() arredonda para cima.
       _sacos = (_totalFertilizante! / _pesoSaco).ceil();
     });
   }
